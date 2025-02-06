@@ -1,11 +1,10 @@
 import { $ } from "bun";
+import ora from "ora";
 import { v4 as uuid } from "uuid";
 import { db } from "./db";
 import { session } from "./db/schema/session";
-import assert from "node:assert";
-import ora from "ora";
 
-const API_BASE = "http://localhost:5173";
+const API_BASE = "https://localhost.snehaa.store";
 
 async function loginWithBrowser() {
   const token = uuid();
@@ -25,10 +24,7 @@ async function loginWithBrowser() {
     .returning();
 
   if (!res) {
-    assert.rejects(() => {
-      throw new Error("Unable to create session.");
-    }, Error);
-    return;
+    throw new Error("Unable to create session.");
   }
 
   await $`open ${API_BASE}/auth/login?token=${res.token}`;
