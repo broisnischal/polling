@@ -6,4 +6,7 @@ export const session = sqliteTable("session", {
   userId: integer("user_id"),
   createdAt: text("created_at").$defaultFn(() => new Date().toISOString()),
   updatedAt: text("updated_at").$defaultFn(() => new Date().toISOString()),
+  expiresAt: text("expires_at").$defaultFn(() =>
+    new Date(Date.now() + 15 * 60 * 1000).toISOString()
+  ),
 });
