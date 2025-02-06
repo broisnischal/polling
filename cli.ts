@@ -4,8 +4,8 @@ import { v4 as uuid } from "uuid";
 import { db } from "./db/index";
 import { session } from "./db/schema/index";
 
-// const API_BASE = "https://localhost.snehaa.store";
-const API_BASE = "http://localhost:5173";
+const API_BASE = "https://localhost.snehaa.store";
+// const API_BASE = "http://localhost:5173";
 
 async function loginWithBrowser() {
   const token = uuid();
