@@ -1,7 +1,7 @@
-import { Links, Meta, Outlet, Scripts } from "react-router";
 import { NuqsAdapter } from "nuqs/adapters/react-router/v7";
+import { Links, Meta, Outlet, Scripts } from "react-router";
 
-import "#app/tailwind.css";
+import "#app/tailwind.css?inline";
 
 export default function App() {
   return (

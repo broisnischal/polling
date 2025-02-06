@@ -1,4 +1,4 @@
-import { $ } from "bun";
+import { exec } from "child_process";
 import ora from "ora";
 import { v4 as uuid } from "uuid";
 import { db } from "./db/index";
@@ -27,9 +27,13 @@ async function loginWithBrowser() {
     throw new Error("Unable to create session.");
   }
 
-  await $`open ${API_BASE}/auth/login?token=${res.token}`;
+  // Use platform-specific command to open browser
+  const openCommand = process.platform === 'win32' ? 'start' :
+    process.platform === 'darwin' ? 'open' : 'xdg-open';
 
-  //   await $.fetch(`${API_BASE}/auth/login`, {
+  exec(`${openCommand} ${API_BASE}/auth/login?token=${res.token}`);
+
+  //   await fetch(`${API_BASE}/auth/login`, {
   //     method: "POST",
   //     body: JSON.stringify({ token }),
   //   });

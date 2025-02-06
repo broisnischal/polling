@@ -7,9 +7,9 @@
     "**/.server/**/*.ts",
     "**/.server/**/*.tsx",
     "**/.client/**/*.ts",
-    "**/.client/**/*.tsx",
+    "**/.client/**/*.tsx",  
     ".react-router/types/**/*",
-    "vite.config.ts"
+    "vite.config.tts"
   ],
   "compilerOptions": {
     "jsx": "react-jsx",

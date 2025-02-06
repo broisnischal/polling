@@ -1,8 +1,8 @@
+import { db } from "#db/index.js";
 import { eq } from "drizzle-orm";
 import { parseAsString } from "nuqs";
 import { createLoader } from "nuqs/server";
 import { Form } from "react-router";
-import { db } from "../../db/index";
 import { session } from "../../db/schema/index";
 import type { Route } from "./+types/login";
 
