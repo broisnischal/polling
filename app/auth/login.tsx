@@ -1,7 +1,10 @@
-import { parseAsString, useQueryState } from "nuqs";
+import { session } from "#db/schema/session.js";
+import { eq } from "drizzle-orm";
+import { parseAsString } from "nuqs";
 import { createLoader } from "nuqs/server";
-import { Form, redirect } from "react-router";
+import { Form } from "react-router";
 import type { Route } from "./+types/login";
+import { db } from "#db/index.js";
 
 export const tokenSearchParams = {
   token: parseAsString.withDefault(""),
@@ -12,10 +15,38 @@ export const loadSearchParams = createLoader(tokenSearchParams);
 export async function loader({ request }: Route.LoaderArgs) {
   const { token } = loadSearchParams(request);
 
+  const res = await db.query.session.findFirst({
+    where: (session, { eq }) => eq(session.token, token),
+  });
+
+  // update the session for authorized
+
+  if (!res) {
+    return {
+      token,
+      success: false,
+    };
+  }
+
+  await db
+    .update(session)
+    .set({ status: "authorized" })
+    .where(eq(session.id, res.id));
+
+  if (res?.status === "authorized") {
+    return {
+      token,
+      success: true,
+    };
+  }
+
   return {
     token,
+    success: false,
   };
 }
+
+export async function action({ request }: Route.ActionArgs) {}
 
 export default function login({ loaderData }: Route.ComponentProps) {
   return (
@@ -24,13 +55,15 @@ export default function login({ loaderData }: Route.ComponentProps) {
 
       <br />
 
-      <div>
-        <p className="w-1/2">
-          Polling | This is a simple app demonstrating a short, long, and
-          immediate polling for the remote auth, using the cli, desktop, or
-          whatever.
-        </p>
-      </div>
+      {loaderData.success && (
+        <div>
+          <p className="w-1/2">
+            Polling | This is a simple app demonstrating a short, long, and
+            immediate polling for the remote auth, using the cli, desktop, or
+            whatever.
+          </p>
+        </div>
+      )}
       <br />
       {loaderData.token ? (
         <Form className="flex flex-col gap-2 w-1/2 ">

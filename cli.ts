@@ -3,6 +3,7 @@ import { v4 as uuid } from "uuid";
 import { db } from "./db";
 import { session } from "./db/schema/session";
 import assert from "node:assert";
+import ora from "ora";
 
 const API_BASE = "http://localhost:5173";
 
@@ -10,6 +11,8 @@ async function loginWithBrowser() {
   const token = uuid();
 
   const randomUserId = Math.floor(Math.random() * 1000);
+
+  console.log(randomUserId);
 
   /// hash the token if needed
 
@@ -22,7 +25,7 @@ async function loginWithBrowser() {
     .returning();
 
   if (!res) {
-    assert.throws(() => {
+    assert.rejects(() => {
       throw new Error("Unable to create session.");
     }, Error);
     return;
@@ -35,15 +38,42 @@ async function loginWithBrowser() {
   //     body: JSON.stringify({ token }),
   //   });
 
-  return true;
+  pollForAuthStatus({ sessionId: res.id });
 }
 
 // Run CLI
 console.log("Starting authentication...");
-const success = await loginWithBrowser();
-if (success) {
-  console.log("Successfully authenticated!");
-  // Store credentials or proceed with CLI operations
-} else {
-  console.error("Authentication failed");
+await loginWithBrowser();
+
+function pollForAuthStatus({ sessionId }: { sessionId: number }) {
+  const spinner = ora("Waiting for authentication...").start();
+
+  const checkAuth = async () => {
+    spinner.text = "Checking authentication status...";
+
+    const session = await db.query.session.findFirst({
+      where: (session, { eq }) => eq(session.id, sessionId),
+    });
+
+    if (session?.status === "authorized") {
+      spinner.succeed("Successfully authenticated!");
+      process.exit(0);
+    }
+
+    if (session?.status === "expired") {
+      spinner.fail("Session expired");
+      process.exit(1);
+    }
+
+    spinner.text = "Waiting for authentication...";
+  };
+
+  // Check every 2 seconds
+  const interval = setInterval(checkAuth, 2000);
+
+  setTimeout(() => {
+    clearInterval(interval);
+    spinner.fail("Authentication timeout");
+    process.exit(1);
+  }, 3 * 60 * 1000);
 }

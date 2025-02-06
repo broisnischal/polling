@@ -9,4 +9,7 @@ export const session = sqliteTable("session", {
   expiresAt: text("expires_at").$defaultFn(() =>
     new Date(Date.now() + 15 * 60 * 1000).toISOString()
   ),
+  status: text("status", {
+    enum: ["pending", "authorized", "expired", "revoked"],
+  }).default("pending"),
 });

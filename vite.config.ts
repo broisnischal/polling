@@ -3,8 +3,5 @@ import tailwind from "@tailwindcss/vite";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  plugins: [
-    reactRouter(),
-    tailwind(),
-  ],
+  plugins: [reactRouter(), tailwind()],
 });
