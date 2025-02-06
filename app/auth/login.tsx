@@ -1,10 +1,10 @@
-import { session } from "#db/schema/session.js";
 import { eq } from "drizzle-orm";
 import { parseAsString } from "nuqs";
 import { createLoader } from "nuqs/server";
 import { Form } from "react-router";
+import { db } from "../../db/index";
+import { session } from "../../db/schema/index";
 import type { Route } from "./+types/login";
-import { db } from "#db/index.js";
 
 export const tokenSearchParams = {
   token: parseAsString.withDefault(""),
@@ -46,7 +46,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   };
 }
 
-export async function action({ request }: Route.ActionArgs) {}
+export async function action({ request }: Route.ActionArgs) { }
 
 export default function login({ loaderData }: Route.ComponentProps) {
   return (

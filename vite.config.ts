@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     allowedHosts: ["localhost.snehaa.store"],
     hmr: {
-      overlay: false
+      overlay: false,
     }
   },
 });

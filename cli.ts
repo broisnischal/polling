@@ -1,8 +1,8 @@
 import { $ } from "bun";
 import ora from "ora";
 import { v4 as uuid } from "uuid";
-import { db } from "./db";
-import { session } from "./db/schema/session";
+import { db } from "./db/index";
+import { session } from "./db/schema/index";
 
 const API_BASE = "https://localhost.snehaa.store";
 
