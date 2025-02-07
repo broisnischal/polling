@@ -32,6 +32,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     return {
       token,
       authorized: true,
+      success: true,
     };
   }
 
@@ -42,12 +43,12 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export async function action({ request }: Route.ActionArgs) {
-  console.log("action")
+  console.log("action");
 
   const formData = await request.formData();
   const token = formData.get("token");
 
-  console.log(token)
+  console.log(token);
 
   const res = await db.query.session.findFirst({
     where: (session, { eq }) => eq(session.token, token as string),
@@ -70,24 +71,32 @@ export async function action({ request }: Route.ActionArgs) {
   };
 }
 
-export default function login({ loaderData, actionData }: Route.ComponentProps) {
-  console.log(actionData);
-
+export default function login({
+  loaderData,
+  actionData,
+}: Route.ComponentProps) {
   return (
     <div className="p-4">
-      <h1 className="text-2xl font-bold">Login</h1>
-
       <br />
-
+      <br />
+      <h1 className="text-2xl font-bold">🔑 Device Login</h1>
+      <br />
       <div>
-        <p className="w-1/2">
+        <p className="w-2/3">
           Polling | This is a simple app demonstrating a short, long, and
           immediate polling for the remote auth, using the cli, desktop, or
-          whatever.
+          whatever. ( cli, figma plugins, vscode exts, desktop apps, etcs).
         </p>
       </div>
       <br />
-      {loaderData.token ? (
+      {/* {loaderData.success ? (
+        <></>
+      ) : (
+        <div>
+          <h1>Your token is Invalid!</h1>
+        </div>
+      )} */}
+      {loaderData.token || loaderData.success || !loaderData.authorized ? (
         <Form method="POST" className="flex flex-col gap-2 w-1/2 ">
           <input
             type="text"
@@ -106,26 +115,22 @@ export default function login({ loaderData, actionData }: Route.ComponentProps) 
         </Form>
       ) : (
         <div>
-          <p className="text-cyan-500 font-bold">
+          {/* <p className="text-cyan-500 font-bold">
             Please try to login using the cli.
-          </p>
-          <p>
-            Users logs in, then have the session and if the session active, ask
-            user for the totp, then login.
-          </p>
+          </p> */}
         </div>
       )}
-
-      {loaderData.authorized ? (
+      {actionData && actionData.authorized && (
         <div>
           <p>You are now logged in. and can close the tab.</p>
         </div>
-      ) : (
-        <div>
-          <br />
-          <p>You are not authorized, please try again.</p>
-        </div>
       )}
+      <footer className="mt-[30vh] text-center text-gray-500 text-sm border-t p-10 border-black/10">
+        <p>
+          Users logs in, then have the session and if the session active, ask
+          user for the totp, then login.
+        </p>
+      </footer>
     </div>
   );
 }

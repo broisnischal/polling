@@ -1,7 +1,7 @@
 {
-  "name": "underkill-stack",
+  "name": "polling",
   "version": "1.0.0",
-  "description": "A minimal react-router stack",
+  "description": "A polling example",
   "type": "module",
   "imports": {
     "#*": "./*"
@@ -20,7 +20,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jacobparis/underkill-stack.git"
+    "url": "git+https://github.com/broisnischal/polling.git"
   },
   "keywords": [
     "remix"
@@ -28,9 +28,9 @@
   "author": "Jacob Paris",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/jacobparis/underkill-stack/issues"
+    "url": "https://github.com/broisnischal/polling/issues"
   },
-  "homepage": "https://github.com/jacobparis/underkill-stack#readme",
+  "homepage": "https://github.com/broisnischal/polling#readme",
   "dependencies": {
     "@react-router/node": "^7.1.3",
     "@react-router/serve": "^7.1.3",
@@ -45,6 +45,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router": "^7.1.3",
+    "remix-utils": "^8.1.0",
     "tsx": "^4.19.2",
     "uuid": "^11.0.5"
   },

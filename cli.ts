@@ -3,9 +3,10 @@ import ora from "ora";
 import { v4 as uuid } from "uuid";
 import { db } from "./db/index";
 import { session } from "./db/schema/index";
+import { eq } from "drizzle-orm";
 
-const API_BASE = "https://localhost.snehaa.store";
-// const API_BASE = "http://localhost:5173";
+// const API_BASE = "https://localhost.snehaa.store";
+const API_BASE = "http://localhost:5173";
 
 async function loginWithBrowser() {
   const token = uuid();
@@ -29,8 +30,12 @@ async function loginWithBrowser() {
   }
 
   // Use platform-specific command to open browser
-  const openCommand = process.platform === 'win32' ? 'start' :
-    process.platform === 'darwin' ? 'open' : 'xdg-open';
+  const openCommand =
+    process.platform === "win32"
+      ? "start"
+      : process.platform === "darwin"
+      ? "open"
+      : "xdg-open";
 
   exec(`${openCommand} ${API_BASE}/auth/login?token=${res.token}`);
 
@@ -48,6 +53,27 @@ await loginWithBrowser();
 
 function pollForAuthStatus({ sessionId }: { sessionId: number }) {
   const spinner = ora("Waiting for authentication...").start();
+  let interval: NodeJS.Timeout;
+
+  const cleanup = async () => {
+    await db
+      .update(session)
+      .set({ status: "revoked" })
+      .where(eq(session.id, sessionId));
+
+    clearInterval(interval);
+    spinner.stop();
+  };
+
+  process.on("SIGINT", async () => {
+    await cleanup();
+    process.exit(0);
+  });
+  // Handle process exit events
+  process.on("SIGTERM", async () => {
+    await cleanup();
+    process.exit(0);
+  });
 
   const checkAuth = async () => {
     spinner.text = "Checking authentication status...";
@@ -58,6 +84,7 @@ function pollForAuthStatus({ sessionId }: { sessionId: number }) {
 
     if (session?.status === "authorized") {
       spinner.succeed("Successfully authenticated!");
+      // Store the session! on whatever, like cli, figma, vscode, or desktop etcs
       process.exit(0);
     }
 
@@ -70,10 +97,10 @@ function pollForAuthStatus({ sessionId }: { sessionId: number }) {
   };
 
   // Check every 2 seconds
-  const interval = setInterval(checkAuth, 2000);
+  interval = setInterval(checkAuth, 2000);
 
   setTimeout(() => {
-    clearInterval(interval);
+    cleanup();
     spinner.fail("Authentication timeout");
     process.exit(1);
   }, 3 * 60 * 1000);
