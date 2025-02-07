@@ -4,9 +4,32 @@ import { v4 as uuid } from "uuid";
 import { db } from "./db/index";
 import { session } from "./db/schema/index";
 import { eq } from "drizzle-orm";
+import { checkSession, logout } from "./cli/auth";
+
+import { Command } from "commander";
+import login from "#app/auth/login.js";
+
+const API_BASE = "http://localhost:5173";
+
+const program = new Command();
+
+program
+  .command("login")
+  .description("Log in to your account")
+  .action(loginWithBrowser);
+
+program.command("logout").description("Log out of your account").action(logout);
+
+program
+  .command("status")
+  .description("Check login status")
+  .action(checkSession);
+
+program.parse(process.argv);
+
+/// other logic
 
 // const API_BASE = "https://localhost.snehaa.store";
-const API_BASE = "http://localhost:5173";
 
 async function loginWithBrowser() {
   const token = uuid();

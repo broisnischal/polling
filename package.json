@@ -37,6 +37,7 @@
     "@tailwindcss/vite": "^4.0.0",
     "@types/better-sqlite3": "^7.6.12",
     "better-sqlite3": "^11.8.1",
+    "commander": "^13.1.0",
     "drizzle-kit": "^0.30.4",
     "drizzle-orm": "^0.39.2",
     "isbot": "^5.1.21",
